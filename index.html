@@ -1,430 +1,373 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ms">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <title>iStudent Portal | UiTM</title>
+    <title>Sistem Maklumat Pelajar Eksekutif (SMPE) - UKM</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
+        /* COLOR SCHEME BASED ON SMPE SCREENSHOT */
         :root {
-            --uitm-blue: #003366;
-            --uitm-gold: #c5a059;
-            --uitm-purple: #3d1b5d;
+            --smpe-blue: #3b5998;
+            --smpe-header-bg: #4c70ba;
+            --smpe-sidebar-text: #800000; /* Maroon links from screenshot */
+            --smpe-btn-blue: #5379c4;
+            --ukm-gold: #ffcc00;
         }
 
         body {
-            font-family: 'Montserrat', sans-serif;
-            background-color: #f4f7f6;
-            background-image: radial-gradient(circle at 10% 20%, rgba(239, 246, 255, 1) 0%, rgba(219, 233, 244, 1) 100%);
-            min-height: 100vh;
-            padding-bottom: 70px; /* Space for mobile nav */
-        }
-
-        @media (min-width: 768px) {
-            body { padding-bottom: 0; }
+            font-family: Arial, sans-serif;
+            background-color: #ffffff;
+            color: #333;
         }
 
         .header-gradient {
-            background: linear-gradient(90deg, #002147 0%, #3d1b5d 100%);
-            border-bottom: 4px solid var(--uitm-gold);
+            background: url('https://www.transparenttextures.com/patterns/cubes.png'), linear-gradient(to right, #6fa1e0, #3b5998);
+            background-blend-mode: overlay;
         }
 
-        /* Card Flip Styles */
-        .card-container {
-            perspective: 1200px;
-            width: 100%;
-            max-width: 240px;
-        }
-
-        .card {
-            width: 100%;
-            aspect-ratio: 240/380;
-            position: relative;
-            transform-style: preserve-3d;
-            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            cursor: pointer;
-        }
-
-        .card.flipped {
-            transform: rotateY(180deg);
-        }
-
-        .card-face {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            overflow: hidden;
-            border: 1px solid rgba(0,0,0,0.05);
-        }
-
-        .card-back {
-            transform: rotateY(180deg);
-        }
-
-        /* Responsive Utilities */
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-            animation: fadeIn 0.4s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .nav-link.active {
-            background-color: rgba(255, 255, 255, 0.2);
+        .user-bar {
+            background-color: #3b5998;
             color: white;
-            border-radius: 8px;
+            font-size: 12px;
+            font-weight: bold;
         }
 
-        .info-label {
-            color: #64748b;
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            font-weight: 700;
+        .sidebar-link {
+            color: #a52a2a;
+            font-size: 13px;
+            transition: all 0.2s;
+            border-bottom: 1px solid #eee;
         }
 
-        .info-value {
-            color: #1e293b;
-            font-weight: 600;
-            margin-bottom: 0.75rem;
-            word-break: break-word;
+        .sidebar-link:hover {
+            background-color: #f0f4f8;
+            color: #d00000;
         }
 
-        /* Status indicator pulse */
-        @keyframes pulse-soft {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.5; transform: scale(1.2); }
+        .nav-button {
+            background-color: #5379c4;
+            color: white;
+            font-weight: bold;
+            text-align: center;
+            padding: 8px;
+            font-size: 13px;
+            border-radius: 2px;
+            margin-bottom: 4px;
+            transition: background 0.2s;
         }
 
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            background-color: #22c55e;
-            border-radius: 50%;
-            display: inline-block;
-            margin-right: 6px;
-            animation: pulse-soft 2s infinite;
+        .nav-button:hover {
+            background-color: #3b5998;
+        }
+
+        .nav-button.active {
+            background-color: #3b5998;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* Vertical Card Styles */
+        .my-siswa-card {
+            width: 280px;
+            height: 440px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #ddd;
+        }
+
+        .card-header-logo {
+            background: #fff;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
     </style>
 </head>
-<body class="text-slate-800 antialiased">
+<body class="min-h-screen flex flex-col">
 
-    <!-- Desktop Header -->
-    <header class="header-gradient text-white sticky top-0 z-50 shadow-lg">
-        <div class="max-w-6xl mx-auto px-4">
-            <div class="flex items-center justify-between h-16 md:h-20">
-                <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('dashboard')">
-                    <img src="uitmlogo.png" alt="UiTM Logo" class="h-10 md:h-14 brightness-110">
-                    <div class="hidden sm:block border-l border-white/20 pl-3">
-                        <h1 class="text-[10px] md:text-xs font-bold tracking-tighter leading-tight uppercase">Universiti<br>Teknologi MARA</h1>
-                    </div>
-                </div>
+    <!-- ASSETS SECTION: Change these to local paths if needed -->
+    <script>
+        const ASSETS = {
+            ukmLogo: "https://www.ukm.my/v6/wp-content/uploads/2021/05/logo-ukm-1.png",
+            studentPhoto: "https://api.dicebear.com/7.x/avataaars/svg?seed=Felix", // Replace with your local jpg
+            headerBanner: "https://www.transparenttextures.com/patterns/gplay.png",
+            rhbLogo: "https://upload.wikimedia.org/wikipedia/en/thumb/7/7c/RHB_Bank_logo.svg/1200px-RHB_Bank_logo.svg.png"
+        };
+    </script>
 
-                <!-- Desktop Navigation -->
-                <nav class="hidden md:flex items-center space-x-1">
-                    <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-link px-4 py-2 text-sm font-semibold transition-all">Dashboard</button>
-                    <button onclick="switchTab('profile')" id="nav-profile" class="nav-link px-4 py-2 text-sm font-semibold transition-all active">Profile</button>
-                    <button onclick="switchTab('academic')" id="nav-academic" class="nav-link px-4 py-2 text-sm font-semibold transition-all">Academic</button>
-                    <button onclick="switchTab('finance')" id="nav-finance" class="nav-link px-4 py-2 text-sm font-semibold transition-all">Finance</button>
-                    <div class="ml-4 pl-4 border-l border-white/20">
-                        <div class="w-8 h-8 rounded-full bg-[#c5a059] flex items-center justify-center text-xs font-bold shadow-inner">AA</div>
-                    </div>
-                </nav>
-
-                <!-- Mobile Profile Icon -->
-                <div class="md:hidden">
-                     <div class="w-8 h-8 rounded-full bg-[#c5a059] flex items-center justify-center text-xs font-bold border border-white/30">AA</div>
-                </div>
+    <!-- HEADER SECTION -->
+    <header class="header-gradient p-4 flex justify-between items-center text-white border-b-4 border-yellow-400">
+        <div class="flex items-center gap-4">
+            <div class="text-3xl font-bold tracking-tighter drop-shadow-md">
+                <span class="text-blue-100">S</span><span class="text-blue-200">M</span><span class="text-blue-300">P</span><span class="text-blue-400">E</span>
             </div>
+            <div>
+                <h1 class="text-2xl font-bold tracking-tight drop-shadow-lg uppercase">Sistem Maklumat Pelajar Eksekutif</h1>
+            </div>
+        </div>
+        <div class="flex items-center gap-4">
+            <img id="header-ukm-logo" src="" alt="UKM" class="h-16 bg-white/10 p-1 rounded">
         </div>
     </header>
 
-    <main class="max-w-6xl mx-auto px-4 py-6 md:py-8">
-        <!-- Breadcrumb (Hidden on smallest phones) -->
-        <div class="hidden sm:flex items-center text-[10px] uppercase tracking-widest text-slate-400 mb-6 space-x-2">
-            <span id="breadcrumb-parent">Student Management</span>
-            <span class="text-slate-300">/</span>
-            <span id="breadcrumb-active" class="text-blue-900 font-bold">Profile Details</span>
+    <!-- USER INFO BAR -->
+    <div class="user-bar px-6 py-2 flex justify-between items-center border-b border-blue-800">
+        <div>
+            P147903 | MUHAMMAD AQIL BIN ISMAIL | <span class="text-yellow-400">BANGI</span>
         </div>
+        <div class="flex gap-4 items-center">
+            <span>MS | EN</span>
+            <a href="#" class="hover:underline">LOG KELUAR</a>
+        </div>
+    </div>
 
-        <!-- DASHBOARD TAB -->
-        <div id="content-dashboard" class="tab-content space-y-6">
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-                <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-slate-200">
-                    <p class="text-[10px] font-bold text-slate-400 uppercase mb-1">Class</p>
-                    <p class="text-lg md:text-xl font-bold text-blue-900">08:00 AM</p>
-                    <p class="text-[10px] text-slate-500 truncate">Advanced Programming</p>
-                </div>
-                <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-slate-200">
-                    <p class="text-[10px] font-bold text-slate-400 uppercase mb-1">Alerts</p>
-                    <p class="text-lg md:text-xl font-bold text-purple-900">03 New</p>
-                    <p class="text-[10px] text-slate-500 truncate">University Bulletins</p>
-                </div>
-                <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-amber-500">
-                    <p class="text-[10px] font-bold text-slate-400 uppercase mb-1">Tasks</p>
-                    <p class="text-lg md:text-xl font-bold text-slate-800">05 Due</p>
-                    <p class="text-[10px] text-slate-500 truncate">Pending Submissions</p>
-                </div>
-                <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-slate-200">
-                    <p class="text-[10px] font-bold text-slate-400 uppercase mb-1">GPA</p>
-                    <p class="text-lg md:text-xl font-bold text-green-700">3.85</p>
-                    <p class="text-[10px] text-slate-500 truncate">Current Semester</p>
-                </div>
+    <div class="flex flex-1">
+        <!-- SIDEBAR -->
+        <aside class="w-64 border-r border-gray-200 p-4 bg-white">
+            <div class="mb-6 border-2 border-gray-100 p-1">
+                <img id="sidebar-student-photo" src="" alt="Student Photo" class="w-full grayscale-[0.2]">
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="lg:col-span-2 space-y-4">
-                    <div class="bg-blue-900 rounded-2xl p-6 text-white relative overflow-hidden shadow-lg">
-                        <div class="relative z-10">
-                            <h2 class="text-xl font-bold mb-1">Hi, Amirul Aleeq!</h2>
-                            <p class="text-blue-200 text-xs mb-4">Exam slip for Session 20244 is now available.</p>
-                            <button class="bg-white text-blue-900 px-5 py-2 rounded-xl text-xs font-bold hover:scale-105 transition-transform">Download Slip</button>
-                        </div>
-                        <div class="absolute -right-4 -bottom-4 opacity-10">
-                            <svg class="w-32 h-32" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L1 7l11 5 11-5-11-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-                    <h3 class="text-xs font-bold uppercase text-slate-400 mb-4">i-Learn Feed</h3>
-                    <div class="space-y-3">
-                        <div class="flex items-start space-x-3 p-2 hover:bg-slate-50 rounded-lg transition-colors">
-                            <div class="mt-1 status-dot"></div>
-                            <div class="text-xs">
-                                <p class="font-bold">ICT600 - Quiz 1</p>
-                                <p class="text-slate-400">Due Tomorrow, 11:59 PM</p>
-                            </div>
-                        </div>
-                        <div class="flex items-start space-x-3 p-2 hover:bg-slate-50 rounded-lg transition-colors">
-                            <div class="mt-1 w-2 h-2 rounded-full bg-slate-300"></div>
-                            <div class="text-xs">
-                                <p class="font-bold">CSC510 - Lab Report</p>
-                                <p class="text-green-600 font-semibold">Submitted Successfully</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <!-- Red Links Section -->
+            <div class="flex flex-col mb-4">
+                <a href="#" class="sidebar-link p-2">- Muat Naik Laporan Kesihatan</a>
+                <a href="#" class="sidebar-link p-2">- Muat Naik Gambar</a>
+                <a href="#" onclick="switchTab('dashboard')" class="sidebar-link p-2 font-bold">- Makluman Penting</a>
+                <a href="#" class="sidebar-link p-2">- Tarikh-tarikh Penting</a>
+                <a href="#" class="sidebar-link p-2">- Dokumen / Borang</a>
             </div>
-        </div>
 
-        <!-- PROFILE TAB -->
-        <div id="content-profile" class="tab-content active space-y-6">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-                <!-- Personal Info Card -->
-                <div class="lg:col-span-2 glass-panel rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                    <div class="bg-slate-50/50 border-b border-slate-200 px-6 py-4 flex justify-between items-center">
-                        <h2 class="font-bold text-slate-800 text-sm md:text-base flex items-center">
-                            <svg class="w-4 h-4 mr-2 text-blue-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                            Personal Particulars
-                        </h2>
-                        <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-[10px] font-bold">Active</span>
-                    </div>
-                    <div class="p-6 md:p-8">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12">
+            <!-- Nav Buttons -->
+            <div class="flex flex-col">
+                <button onclick="switchTab('biodata')" class="nav-button" id="btn-biodata">Biodata Pelajar</button>
+                <button onclick="switchTab('pendaftaran')" class="nav-button" id="btn-pendaftaran">Pendaftaran</button>
+                <button onclick="switchTab('peperiksaan')" class="nav-button" id="btn-peperiksaan">Peperiksaan</button>
+                <button onclick="switchTab('jadual')" class="nav-button" id="btn-jadual">Jadual Peperiksaan</button>
+                <button onclick="switchTab('permohonan')" class="nav-button" id="btn-permohonan">Permohonan Dokumen</button>
+                <button onclick="switchTab('kad-kampus')" class="nav-button" id="btn-kad-kampus">Kad Kampus UKM</button>
+                <button onclick="switchTab('panduan')" class="nav-button" id="btn-panduan">Panduan Penggunaan SMPE</button>
+                <button onclick="switchTab('bantuan')" class="nav-button" id="btn-bantuan">Bantuan</button>
+            </div>
+
+            <div class="mt-8 text-center">
+                <a href="#" class="text-red-700 font-bold text-xs uppercase hover:underline">Tukar Kata Laluan</a>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="flex-1 p-8 bg-white overflow-y-auto">
+            
+            <!-- TAB: DASHBOARD (MAKLUMAN PENTING) -->
+            <section id="tab-dashboard" class="tab-content active text-center">
+                <h2 class="text-xl font-bold mb-8">Makluman Penting</h2>
+                
+                <div class="mb-8">
+                    <div class="w-12 h-1 bg-red-500 mx-auto mb-4"></div>
+                    <h3 class="text-red-600 font-bold uppercase">PERHATIAN! Kad MySiswa</h3>
+                    <p class="text-sm mt-2">Kad MySiswa boleh diambil di Pejabat UKMShape dan pengaktifan akaun boleh dibuat di bank RHB.</p>
+                    <a href="#" onclick="switchTab('kad-kampus')" class="text-red-600 font-bold underline text-sm">KLIK DI SINI</a>
+                    <span class="text-sm">untuk semakan status kad anda sebelum hadir.</span>
+                </div>
+
+                <div class="mb-8">
+                    <h3 class="text-orange-700 font-bold">Penggunaan Emel Siswa</h3>
+                    <p class="text-xs max-w-2xl mx-auto leading-relaxed mt-2 text-gray-600">
+                        Kepada semua pelajar, penggunaan emel siswa untuk sebarang urusan adalah berkuatkuasa serta merta. 
+                        Pelajar yang masih belum mempunyai emel siswa sila buat permohonan di <span class="text-blue-600 underline cursor-pointer">http://appsmu.ukm.my/speep/</span> dengan segera. Terima kasih.
+                    </p>
+                </div>
+
+                <div class="mb-8">
+                    <h3 class="text-orange-700 font-bold">Dokumen Perakuan</h3>
+                    <p class="text-xs max-w-2xl mx-auto leading-relaxed mt-2 text-gray-600">
+                        Sekiranya terdapat menu 'Dokumen Perakuan', Sila baca dan tandakan dokumen perakuan tersebut dengan segera. Harap maklum.
+                    </p>
+                </div>
+
+                <div class="mb-8">
+                    <h3 class="text-orange-700 font-bold">Pengemaskinian Maklumat DUN</h3>
+                    <p class="text-xs max-w-2xl mx-auto leading-relaxed mt-2 text-gray-600">
+                        Semua pelajar diminta mengemaskini maklumat DUN di bahagian <span class="text-red-600">Alamat</span>.
+                    </p>
+                </div>
+            </section>
+
+            <!-- TAB: KAD KAMPUS (MATCHING SCREENSHOT) -->
+            <section id="tab-kad-kampus" class="tab-content">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold text-gray-700">Senarai Permohonan</h2>
+                    <button class="bg-blue-600 text-white px-4 py-2 rounded flex items-center gap-2 font-bold text-sm">
+                        <i data-lucide="plus" class="w-4 h-4"></i> Permohonan
+                    </button>
+                </div>
+
+                <!-- Status Card from Screenshot 2 -->
+                <div class="bg-white border border-gray-100 shadow-lg rounded-lg p-6 mb-8">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="flex items-center gap-4">
+                            <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center font-bold text-gray-500">1</div>
                             <div>
-                                <p class="info-label">Full Name</p>
-                                <p class="info-value text-base">Mohd Amirul Aleeq Che Karola</p>
-                                <p class="info-label">Student ID</p>
-                                <p class="info-value">2023142069</p>
-                                <p class="info-label">Program</p>
-                                <p class="info-value">CS230 - Bachelor of Computer Science (Hons.)</p>
+                                <h3 class="font-bold text-gray-800 uppercase">Muhammad Aqil Bin Ismail</h3>
+                                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">SISWAZAH</p>
                             </div>
-                            <hr class="md:hidden my-4 border-slate-100">
-                            <div>
-                                <p class="info-label">Faculty</p>
-                                <p class="info-value">College of Computing, Informatics and Mathematics</p>
-                                <p class="info-label">Email</p>
-                                <p class="info-value text-blue-700 text-sm">2023142069@student.uitm.edu.my</p>
-                                <p class="info-label">Campus</p>
-                                <p class="info-value">UiTM Cawangan Kelantan</p>
-                            </div>
+                        </div>
+                        <div class="bg-emerald-100 text-emerald-600 px-4 py-1 rounded-full text-[10px] font-bold uppercase flex items-center gap-2">
+                            <i data-lucide="check-circle" class="w-3.5 h-3.5"></i> Permohonan Diluluskan
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-4 gap-4 py-4 border-t border-gray-50">
+                        <div>
+                            <p class="text-[10px] font-bold text-gray-400 uppercase">Tarikh Mohon</p>
+                            <p class="text-xs font-bold mt-1">13/08/2024</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-bold text-gray-400 uppercase">Sebab Mohon</p>
+                            <p class="text-xs font-bold mt-1">Pelajar Baharu</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-bold text-gray-400 uppercase">Status Kad</p>
+                            <p class="text-xs font-bold text-blue-600 underline cursor-pointer mt-1">Kad Telah Siap (Telah Diambil)</p>
+                            <p class="text-[9px] text-emerald-500 font-bold mt-0.5">Aktif</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-bold text-gray-400 uppercase">Status Bayaran</p>
+                            <p class="text-xs font-bold mt-1">Tidak Perlu Bayar</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Digital ID Section -->
-                <div class="flex flex-col items-center space-y-4">
-                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 w-full flex flex-col items-center">
-                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-6">Digital Smart Card</p>
-                        
-                        <div class="card-container mb-6" onclick="toggleCard()">
-                            <div class="card" id="studentCard">
-                                <div class="card-face">
-                                    <img src="kadpelajard.png" alt="Front" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/240x380?text=Card+Front'">
-                                    <div class="absolute bottom-4 right-4 bg-black/30 backdrop-blur-md px-2 py-1 rounded text-[8px] text-white">TAP TO FLIP</div>
+                <div class="grid grid-cols-2 gap-8">
+                    <!-- Application Details -->
+                    <div class="bg-white border border-gray-100 shadow p-6 rounded-lg">
+                        <h4 class="text-sm font-bold text-blue-800 border-b pb-2 mb-4">Maklumat Pemohon</h4>
+                        <div class="space-y-3">
+                            <div class="flex justify-between text-xs">
+                                <span class="text-gray-500">No. Matrik</span>
+                                <span class="font-bold">P147903</span>
+                            </div>
+                            <div class="flex justify-between text-xs">
+                                <span class="text-gray-500">No. Kad Pengenalan</span>
+                                <span class="font-bold">000124110157</span>
+                            </div>
+                            <div class="flex justify-between text-xs">
+                                <span class="text-gray-500">Tahap Pengajian</span>
+                                <span class="font-bold">DIPLOMA PASCASISWAZAH (EKSEKUTIF)</span>
+                            </div>
+                            <div class="flex justify-between text-xs">
+                                <span class="text-gray-500">Fakulti</span>
+                                <span class="font-bold">PENDIDIKAN</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- VERTICAL CARD PREVIEW -->
+                    <div class="flex flex-col items-center">
+                        <div class="my-siswa-card flex flex-col">
+                            <!-- RHB / Header -->
+                            <div class="h-14 bg-white flex items-center px-4 justify-between border-b">
+                                <img id="card-rhb-logo" src="" alt="RHB" class="h-6">
+                                <div class="text-right">
+                                    <p class="text-[6px] font-bold leading-none">KEMENTERIAN</p>
+                                    <p class="text-[6px] font-bold leading-none">PENGAJIAN TINGGI</p>
                                 </div>
-                                <div class="card-face card-back">
-                                    <img src="kadpelajarb.png" alt="Back" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/240x380?text=Card+Back'">
+                            </div>
+                            
+                            <!-- Main Body -->
+                            <div class="flex-1 p-4 flex flex-col items-center text-center">
+                                <div class="w-32 h-40 bg-gray-200 mb-4 border-2 border-white shadow-md overflow-hidden">
+                                    <img id="card-student-photo" src="" alt="Student Photo" class="w-full h-full object-cover">
+                                </div>
+                                
+                                <h3 class="text-[10px] font-bold uppercase leading-tight px-4 mb-2">Muhammad Aqil Bin Ismail</h3>
+                                <p class="text-[8px] text-gray-600 font-bold uppercase mb-4">Fakulti Pendidikan</p>
+                                
+                                <div class="space-y-1 mb-6">
+                                    <p class="text-[11px] font-black text-blue-900 leading-none">P147903</p>
+                                    <p class="text-[7px] font-bold text-gray-400">2024/2025/1 SISWAZAH</p>
+                                </div>
+
+                                <div class="mt-auto w-full flex justify-between items-end">
+                                    <div class="flex flex-col items-start">
+                                        <p class="text-[9px] font-black italic text-blue-800">MySiswa</p>
+                                        <p class="text-[7px] font-bold text-gray-400">ISLAMIC</p>
+                                    </div>
+                                    <div class="flex flex-col items-center">
+                                        <div class="w-10 h-10 border border-gray-100 flex items-center justify-center mb-1">
+                                            <i data-lucide="qr-code" class="w-8 h-8 text-gray-200"></i>
+                                        </div>
+                                        <span class="text-blue-900 font-black italic text-[12px]">VISA</span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <button onclick="toggleCard()" class="w-full py-3 px-6 rounded-xl bg-slate-100 hover:bg-[#c5a059] hover:text-white transition-all font-bold text-xs text-slate-600 flex justify-center items-center space-x-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                            <span>Rotate Card</span>
-                        </button>
+                            <!-- Decorative background pattern overlay -->
+                            <div class="absolute inset-0 opacity-5 pointer-events-none" style="background-image: url('https://www.transparenttextures.com/patterns/graphy.png');"></div>
+                        </div>
+                        <p class="text-[10px] text-gray-400 font-bold mt-4 uppercase tracking-widest">Pratonton Kad MySiswa (Vertical)</p>
                     </div>
                 </div>
-            </div>
-        </div>
+            </section>
 
-        <!-- ACADEMIC TAB -->
-        <div id="content-academic" class="tab-content space-y-6">
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                <div class="p-5 border-b border-slate-100 flex flex-col sm:flex-row justify-between sm:items-center gap-3 bg-slate-50/50">
-                    <h2 class="font-bold text-slate-800 text-sm">Exam Results: Session 20244</h2>
-                    <button class="text-[10px] bg-white border border-slate-200 px-4 py-2 rounded-lg font-bold shadow-sm">Change Semester</button>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="bg-slate-50 text-slate-400 text-[9px] uppercase font-bold border-b border-slate-100">
-                                <th class="px-6 py-4">Course</th>
-                                <th class="px-6 py-4">Description</th>
-                                <th class="px-6 py-4">Grade</th>
-                                <th class="px-6 py-4">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody class="text-xs divide-y divide-slate-50">
-                            <tr class="hover:bg-blue-50/40 transition-colors">
-                                <td class="px-6 py-4 font-bold text-blue-900">CSC510</td>
-                                <td class="px-6 py-4">Discrete Structures</td>
-                                <td class="px-6 py-4 font-bold">A</td>
-                                <td class="px-6 py-4"><span class="text-green-600 font-bold">PASS</span></td>
-                            </tr>
-                            <tr class="hover:bg-blue-50/40 transition-colors">
-                                <td class="px-6 py-4 font-bold text-blue-900">ICT600</td>
-                                <td class="px-6 py-4">IT Project Management</td>
-                                <td class="px-6 py-4 font-bold">A-</td>
-                                <td class="px-6 py-4"><span class="text-green-600 font-bold">PASS</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="p-6 bg-slate-50 border-t border-slate-100 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-                    <div><p class="text-[9px] font-bold text-slate-400 uppercase">GPA</p><p class="text-lg font-bold">3.85</p></div>
-                    <div><p class="text-[9px] font-bold text-slate-400 uppercase">CGPA</p><p class="text-lg font-bold">3.78</p></div>
-                    <div><p class="text-[9px] font-bold text-slate-400 uppercase">Credits</p><p class="text-lg font-bold">64</p></div>
-                    <div><p class="text-[9px] font-bold text-slate-400 uppercase">Status</p><p class="text-lg font-bold text-green-600">GOOD</p></div>
-                </div>
-            </div>
-        </div>
+            <!-- OTHER TAB DUMMIES -->
+            <section id="tab-biodata" class="tab-content text-center py-20">
+                <i data-lucide="user" class="w-16 h-16 mx-auto text-gray-200 mb-4"></i>
+                <h2 class="text-xl font-bold text-gray-400">Modul Biodata Pelajar</h2>
+                <p class="text-gray-400">Data sedang dikemaskini dari sistem SMP.</p>
+            </section>
 
-        <!-- FINANCE TAB -->
-        <div id="content-finance" class="tab-content">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 text-center flex flex-col justify-center">
-                    <p class="text-[10px] font-bold text-slate-400 uppercase mb-2">Total Outstanding</p>
-                    <p class="text-4xl font-black text-slate-800">RM 0.00</p>
-                    <div class="mt-4 inline-flex mx-auto items-center px-3 py-1 bg-green-100 text-green-700 rounded-full text-[10px] font-bold">
-                        <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
-                        CLEAR ACCOUNT
-                    </div>
-                </div>
-                <div class="md:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                    <div class="p-5 bg-slate-50/50 border-b border-slate-100 font-bold text-xs uppercase text-slate-500">Recent Transactions</div>
-                    <div class="divide-y divide-slate-100">
-                        <div class="p-4 flex justify-between items-center hover:bg-slate-50 transition-colors">
-                            <div class="text-xs"><p class="font-bold">Semester Fee - Session 20244</p><p class="text-slate-400">01 Mar 2025</p></div>
-                            <div class="text-right text-xs"><p class="font-bold">RM 540.00</p><p class="text-green-600 font-bold">FPX PAID</p></div>
-                        </div>
-                        <div class="p-4 flex justify-between items-center hover:bg-slate-50 transition-colors">
-                            <div class="text-xs"><p class="font-bold">Insurance Coverage</p><p class="text-slate-400">01 Mar 2025</p></div>
-                            <div class="text-right text-xs"><p class="font-bold">RM 15.00</p><p class="text-green-600 font-bold">FPX PAID</p></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
+            <section id="tab-pendaftaran" class="tab-content text-center py-20">
+                <i data-lucide="book-open" class="w-16 h-16 mx-auto text-gray-200 mb-4"></i>
+                <h2 class="text-xl font-bold text-gray-400">Modul Pendaftaran</h2>
+                <p class="text-gray-400">Sila rujuk jadual pendaftaran semester.</p>
+            </section>
 
-    <!-- Mobile Bottom Navigation -->
-    <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 z-50 flex justify-around items-center h-16 px-2 shadow-[0_-4px_10px_rgba(0,0,0,0.05)]">
-        <button onclick="switchTab('dashboard')" class="flex flex-col items-center space-y-1 text-slate-400 focus:text-blue-900" id="m-nav-dashboard">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
-            <span class="text-[9px] font-bold uppercase">Home</span>
-        </button>
-        <button onclick="switchTab('profile')" class="flex flex-col items-center space-y-1 text-blue-900" id="m-nav-profile">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-            <span class="text-[9px] font-bold uppercase">Profile</span>
-        </button>
-        <button onclick="switchTab('academic')" class="flex flex-col items-center space-y-1 text-slate-400 focus:text-blue-900" id="m-nav-academic">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-            <span class="text-[9px] font-bold uppercase">Grades</span>
-        </button>
-        <button onclick="switchTab('finance')" class="flex flex-col items-center space-y-1 text-slate-400 focus:text-blue-900" id="m-nav-finance">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-            <span class="text-[9px] font-bold uppercase">Finance</span>
-        </button>
-    </nav>
-
-    <footer class="hidden md:block mt-12 py-10 border-t border-slate-200 bg-white/50">
-        <div class="max-w-6xl mx-auto px-4 text-center">
-            <img src="uitmlogo.png" alt="UiTM" class="h-8 mx-auto opacity-30 grayscale mb-4">
-            <p class="text-slate-400 text-xs font-medium">© 2025 Universiti Teknologi MARA. All rights reserved.</p>
-        </div>
-    </footer>
+        </main>
+    </div>
 
     <script>
-        function toggleCard() {
-            document.getElementById("studentCard").classList.toggle("flipped");
-        }
+        // Initialize Assets
+        document.getElementById('header-ukm-logo').src = ASSETS.ukmLogo;
+        document.getElementById('sidebar-student-photo').src = ASSETS.studentPhoto;
+        document.getElementById('card-student-photo').src = ASSETS.studentPhoto;
+        document.getElementById('card-rhb-logo').src = ASSETS.rhbLogo;
 
+        // Initialize Icons
+        lucide.createIcons();
+
+        // Navigation Logic
         function switchTab(tabId) {
-            // Update Tab Content
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.getElementById(`content-${tabId}`).classList.add('active');
-
-            // Update Desktop Nav
-            document.querySelectorAll('.nav-link').forEach(nav => nav.classList.remove('active'));
-            const deskNav = document.getElementById(`nav-${tabId}`);
-            if(deskNav) deskNav.classList.add('active');
-
-            // Update Mobile Nav
-            const mobileButtons = document.querySelectorAll('nav.fixed button');
-            mobileButtons.forEach(btn => {
-                btn.classList.remove('text-blue-900');
-                btn.classList.add('text-slate-400');
+            // Hide all contents
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
             });
-            const activeMobBtn = document.getElementById(`m-nav-${tabId}`);
-            if(activeMobBtn) {
-                activeMobBtn.classList.add('text-blue-900');
-                activeMobBtn.classList.remove('text-slate-400');
-            }
 
-            // Update Breadcrumbs
-            const activeB = document.getElementById('breadcrumb-active');
-            const parentB = document.getElementById('breadcrumb-parent');
-            
-            const mapping = {
-                'dashboard': ['Home', 'Main Dashboard'],
-                'profile': ['Student Management', 'Profile Details'],
-                'academic': ['Academic', 'Results & Grades'],
-                'finance': ['Finance', 'Ledger Statement']
-            };
-            
-            parentB.innerText = mapping[tabId][0];
-            activeB.innerText = mapping[tabId][1];
+            // Remove active from all buttons
+            document.querySelectorAll('.nav-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
 
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            // Show selected
+            document.getElementById('tab-' + tabId).classList.add('active');
+            
+            // Highlight button if it exists
+            const btn = document.getElementById('btn-' + tabId);
+            if(btn) btn.classList.add('active');
+
+            // Scroll to top
+            window.scrollTo(0,0);
         }
+
+        // Set default tab
+        window.onload = () => switchTab('dashboard');
     </script>
 </body>
 </html>
