@@ -1,0 +1,592 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#2b0b4f" />
+  <title>UiTM Student Portal — Demo</title>
+  <style>
+    :root{
+      --uitm-purple:#2f0a52;
+      --uitm-purple-2:#48206d;
+      --uitm-navy:#0c3156;
+      --uitm-blue:#174f82;
+      --uitm-gold:#d2aa55;
+      --ink:#172033;
+      --muted:#667085;
+      --line:#e6e9ef;
+      --bg:#f3f5f9;
+      --card:#ffffff;
+      --good:#18864b;
+      --warn:#b86b09;
+      --danger:#b42318;
+      --shadow:0 14px 40px rgba(24, 31, 50, .08);
+      --radius:18px;
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      min-height:100vh;
+      color:var(--ink);
+      background:
+        radial-gradient(circle at 95% 0%, rgba(72,32,109,.09), transparent 28rem),
+        linear-gradient(180deg,#f8f9fc 0,#f3f5f9 100%);
+      font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    button,input{font:inherit}
+    button{cursor:pointer}
+    a{color:inherit;text-decoration:none}
+    svg{display:block}
+
+    .app{min-height:100vh;display:grid;grid-template-columns:270px minmax(0,1fr)}
+
+    .sidebar{
+      position:sticky;top:0;height:100vh;overflow:auto;
+      background:linear-gradient(165deg,#21043e 0%,var(--uitm-purple) 45%,#123d66 140%);
+      color:#fff;padding:22px 18px 20px;
+      box-shadow:8px 0 28px rgba(24,12,43,.12);z-index:30;
+    }
+    .brand{display:flex;align-items:center;gap:12px;padding:3px 8px 22px;border-bottom:1px solid rgba(255,255,255,.13)}
+    .brand-mark{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;background:#fff;color:var(--uitm-purple);font-weight:900;letter-spacing:-2px;box-shadow:0 8px 22px rgba(0,0,0,.18)}
+    .brand-title{font-size:14px;font-weight:800;letter-spacing:.02em;line-height:1.15}
+    .brand-title span{display:block;color:#d9caef;font-size:10px;text-transform:uppercase;letter-spacing:.12em;margin-top:4px}
+    .demo-tag{display:inline-flex;margin:16px 8px 8px;padding:6px 9px;border:1px solid rgba(255,255,255,.2);border-radius:999px;font-size:9px;font-weight:800;letter-spacing:.14em;color:#f3dfad;background:rgba(255,255,255,.07)}
+    .nav-title{padding:17px 10px 7px;color:#b9a9cc;font-size:9px;font-weight:800;letter-spacing:.16em;text-transform:uppercase}
+    .nav{display:grid;gap:5px}
+    .nav-btn{
+      width:100%;border:0;background:transparent;color:#d9d4e2;
+      display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:12px;text-align:left;font-size:13px;font-weight:650;transition:.18s ease;
+    }
+    .nav-btn svg{width:18px;height:18px;opacity:.85}
+    .nav-btn:hover{background:rgba(255,255,255,.08);color:#fff}
+    .nav-btn.active{background:#fff;color:var(--uitm-purple);box-shadow:0 10px 24px rgba(0,0,0,.18)}
+    .nav-btn.active svg{opacity:1}
+    .nav-count{margin-left:auto;min-width:22px;height:20px;padding:0 7px;border-radius:999px;display:grid;place-items:center;background:rgba(255,255,255,.12);font-size:10px}
+    .nav-btn.active .nav-count{background:#efe8f5}
+    .sidebar-help{margin-top:24px;padding:16px;border-radius:16px;background:linear-gradient(140deg,rgba(255,255,255,.12),rgba(255,255,255,.055));border:1px solid rgba(255,255,255,.12)}
+    .sidebar-help strong{display:block;font-size:12px;margin-bottom:5px}
+    .sidebar-help p{margin:0 0 12px;color:#cfc4da;font-size:10px;line-height:1.55}
+    .sidebar-help button{border:0;border-radius:10px;padding:9px 12px;background:var(--uitm-gold);color:#2c2031;font-size:10px;font-weight:800}
+
+    .main{min-width:0}
+    .topbar{
+      position:sticky;top:0;z-index:25;height:76px;display:flex;align-items:center;justify-content:space-between;gap:18px;
+      padding:0 32px;background:rgba(248,249,252,.88);backdrop-filter:blur(16px);border-bottom:1px solid rgba(220,224,233,.85)
+    }
+    .mobile-menu{display:none;border:0;background:#fff;width:42px;height:42px;border-radius:12px;box-shadow:0 6px 16px rgba(20,25,40,.08);place-items:center}
+    .search{position:relative;max-width:500px;flex:1}
+    .search svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:17px;color:#8991a2}
+    .search input{width:100%;height:44px;border:1px solid #e2e6ee;border-radius:13px;background:#fff;padding:0 16px 0 42px;outline:none;color:var(--ink);box-shadow:0 4px 14px rgba(25,32,50,.035)}
+    .search input:focus{border-color:#9b83b6;box-shadow:0 0 0 4px rgba(72,32,109,.09)}
+    .top-actions{display:flex;align-items:center;gap:10px}
+    .icon-btn{position:relative;width:42px;height:42px;border:1px solid #e1e5ed;border-radius:13px;background:#fff;display:grid;place-items:center;color:#525d71}
+    .icon-btn svg{width:18px;height:18px}
+    .dot{position:absolute;right:8px;top:8px;width:8px;height:8px;border:2px solid #fff;border-radius:50%;background:#e43d32}
+    .profile-button{display:flex;align-items:center;gap:10px;border:0;background:transparent;border-left:1px solid #e1e5ed;padding-left:14px;margin-left:4px;text-align:left}
+    .avatar{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(145deg,var(--uitm-gold),#f0d28e);color:#352039;font-weight:900;box-shadow:0 7px 18px rgba(159,119,43,.2)}
+    .profile-copy strong{display:block;font-size:12px}
+    .profile-copy span{display:block;font-size:9px;color:var(--muted);margin-top:2px}
+
+    .content{padding:28px 32px 58px;max-width:1500px;margin:0 auto}
+    .page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:22px}
+    .eyebrow{color:var(--uitm-purple-2);font-size:9px;font-weight:850;letter-spacing:.15em;text-transform:uppercase;margin-bottom:7px}
+    h1{margin:0;font-size:27px;letter-spacing:-.035em}
+    .subtitle{margin:7px 0 0;color:var(--muted);font-size:12px}
+    .session-pill{display:flex;align-items:center;gap:8px;padding:9px 12px;border:1px solid #e3e6ed;border-radius:12px;background:#fff;color:#4d5769;font-size:10px;font-weight:750;box-shadow:0 5px 14px rgba(25,32,50,.04)}
+    .session-pill i{width:8px;height:8px;border-radius:50%;background:#24a15c;box-shadow:0 0 0 4px rgba(36,161,92,.12)}
+
+    .view{display:none;animation:fade .24s ease}
+    .view.active{display:block}
+    @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+    .hero{
+      position:relative;overflow:hidden;display:grid;grid-template-columns:minmax(0,1.35fr) minmax(330px,.65fr);gap:24px;
+      min-height:244px;padding:30px;border-radius:24px;color:#fff;background:
+        radial-gradient(circle at 88% 12%, rgba(210,170,85,.38), transparent 16rem),
+        linear-gradient(125deg,var(--uitm-purple) 0%,#32105a 48%,#174c77 100%);
+      box-shadow:0 20px 50px rgba(47,10,82,.2)
+    }
+    .hero:after{content:"";position:absolute;width:330px;height:330px;border:54px solid rgba(255,255,255,.035);border-radius:50%;right:-95px;bottom:-200px}
+    .hero-copy{position:relative;z-index:2;align-self:center;max-width:670px}
+    .hero-kicker{display:inline-flex;align-items:center;gap:8px;padding:7px 10px;border-radius:999px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.14);font-size:9px;font-weight:800;letter-spacing:.11em;text-transform:uppercase;color:#f6deb0}
+    .hero h2{font-size:31px;line-height:1.12;letter-spacing:-.045em;margin:14px 0 9px}
+    .hero p{margin:0;color:#d8d6e7;font-size:12px;line-height:1.7;max-width:570px}
+    .hero-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+    .btn{border:0;border-radius:12px;padding:11px 15px;font-size:10px;font-weight:850;letter-spacing:.02em;display:inline-flex;align-items:center;gap:8px;transition:.18s ease}
+    .btn:hover{transform:translateY(-1px)}
+    .btn-gold{background:var(--uitm-gold);color:#342641;box-shadow:0 8px 18px rgba(210,170,85,.22)}
+    .btn-light{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.18)}
+    .hero-card{position:relative;z-index:2;align-self:center;border-radius:18px;padding:19px;background:rgba(255,255,255,.105);border:1px solid rgba(255,255,255,.15);backdrop-filter:blur(10px)}
+    .hero-card-head{display:flex;justify-content:space-between;align-items:start;margin-bottom:16px}
+    .hero-card-head span{font-size:9px;color:#d6cde0;text-transform:uppercase;font-weight:800;letter-spacing:.12em}
+    .hero-card-head strong{font-size:11px;color:#f1dca9}
+    .class-time{font-size:34px;font-weight:850;letter-spacing:-.05em}
+    .class-course{margin-top:4px;font-size:12px;font-weight:750}
+    .class-meta{display:flex;gap:12px;margin-top:15px;padding-top:14px;border-top:1px solid rgba(255,255,255,.12);font-size:10px;color:#d4d2df}
+
+    .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin:18px 0}
+    .stat{background:#fff;border:1px solid var(--line);border-radius:17px;padding:17px;box-shadow:0 8px 22px rgba(25,32,50,.045)}
+    .stat-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .stat-icon{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;background:#f2edf7;color:var(--uitm-purple)}
+    .stat-icon.blue{background:#eaf2fa;color:#174f82}.stat-icon.green{background:#e9f7ef;color:#18864b}.stat-icon.gold{background:#fbf2df;color:#a36b0c}
+    .stat-icon svg{width:17px;height:17px}
+    .stat-label{font-size:9px;color:var(--muted);font-weight:800;letter-spacing:.1em;text-transform:uppercase}
+    .stat-value{font-size:23px;letter-spacing:-.04em;font-weight:850;margin-top:16px}
+    .stat-note{font-size:10px;color:var(--muted);margin-top:4px}
+
+    .grid-2{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(300px,.7fr);gap:18px}
+    .panel{background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 8px 25px rgba(25,32,50,.045);overflow:hidden}
+    .panel-head{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 20px;border-bottom:1px solid #edf0f5}
+    .panel-title{font-size:13px;font-weight:850;margin:0}
+    .panel-subtitle{font-size:9px;color:var(--muted);margin-top:4px}
+    .text-btn{border:0;background:transparent;color:var(--uitm-purple-2);font-size:9px;font-weight:850;text-transform:uppercase;letter-spacing:.08em}
+
+    .schedule{padding:8px 20px 18px}
+    .schedule-row{display:grid;grid-template-columns:64px 5px minmax(0,1fr) auto;gap:14px;align-items:center;padding:14px 0;border-bottom:1px solid #f0f2f6}
+    .schedule-row:last-child{border-bottom:0}
+    .schedule-time strong{font-size:11px}.schedule-time span{display:block;margin-top:2px;color:var(--muted);font-size:9px}
+    .schedule-bar{width:5px;height:46px;border-radius:999px;background:var(--uitm-purple)}
+    .schedule-bar.blue{background:#2775aa}.schedule-bar.gold{background:var(--uitm-gold)}
+    .schedule-course strong{font-size:11px}.schedule-course span{display:block;margin-top:5px;color:var(--muted);font-size:9px}
+    .schedule-chip{padding:6px 9px;border-radius:999px;background:#eef1f5;color:#596275;font-size:8px;font-weight:850}
+
+    .announcement-list{padding:5px 20px 14px}
+    .announcement{display:flex;gap:12px;padding:14px 0;border-bottom:1px solid #f0f2f6}
+    .announcement:last-child{border:0}
+    .ann-date{flex:0 0 42px;height:44px;border-radius:12px;background:#f2edf7;color:var(--uitm-purple);display:grid;place-items:center;text-align:center;font-size:8px;font-weight:800;line-height:1.1}
+    .ann-date strong{font-size:15px}
+    .announcement h4{font-size:10px;line-height:1.45;margin:0}.announcement p{font-size:9px;color:var(--muted);line-height:1.5;margin:5px 0 0}
+
+    .quick-links{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:18px}
+    .quick-link{border:1px solid #e9ebf1;background:#fafbfc;border-radius:14px;padding:15px 11px;text-align:center;transition:.18s ease}
+    .quick-link:hover{background:#fff;border-color:#cbbbd9;box-shadow:0 10px 24px rgba(47,10,82,.08);transform:translateY(-2px)}
+    .quick-link .ql-icon{width:38px;height:38px;border-radius:12px;margin:0 auto 10px;display:grid;place-items:center;background:#eee8f4;color:var(--uitm-purple)}
+    .quick-link svg{width:18px;height:18px}.quick-link strong{display:block;font-size:9px}.quick-link span{display:block;font-size:8px;color:var(--muted);margin-top:4px}
+
+    .profile-grid{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(330px,.65fr);gap:18px}
+    .profile-banner{padding:25px;background:linear-gradient(120deg,#2c0b50,#184c76);color:#fff;display:flex;align-items:center;gap:18px}
+    .profile-photo{width:76px;height:76px;border-radius:22px;background:linear-gradient(145deg,#e6c883,#bd8e36);display:grid;place-items:center;font-size:24px;font-weight:900;border:3px solid rgba(255,255,255,.7)}
+    .profile-banner h2{margin:0;font-size:19px}.profile-banner p{margin:7px 0 0;color:#d4d6e4;font-size:10px;line-height:1.5}
+    .status{display:inline-flex;align-items:center;gap:7px;margin-top:10px;padding:6px 9px;border-radius:999px;background:rgba(33,177,98,.16);color:#b8f2d0;font-size:8px;font-weight:850;letter-spacing:.07em;text-transform:uppercase}
+    .status i{width:7px;height:7px;border-radius:50%;background:#3bd07e}
+    .info-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 26px;padding:22px 25px 8px}
+    .info{padding:0 0 16px;border-bottom:1px solid #f0f1f4;margin-bottom:16px}
+    .info label{display:block;color:var(--muted);font-size:8px;font-weight:850;text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px}
+    .info div{font-size:11px;font-weight:700;line-height:1.5;word-break:break-word}
+    .info div.link{color:#165d93}
+
+    .id-wrap{padding:22px;display:grid;justify-items:center}
+    .id-note{font-size:9px;color:var(--muted);text-align:center;line-height:1.55;margin-bottom:16px}
+    .id-card-shell{width:min(100%,280px);aspect-ratio:1.58;perspective:1100px}
+    .id-card{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .7s cubic-bezier(.2,.75,.2,1)}
+    .id-card.flipped{transform:rotateY(180deg)}
+    .id-face{position:absolute;inset:0;border-radius:18px;overflow:hidden;backface-visibility:hidden;box-shadow:0 18px 38px rgba(28,25,41,.2);color:#fff}
+    .id-front{background:linear-gradient(135deg,#260743,#43156d 56%,#154870);padding:17px}
+    .id-front:before{content:"";position:absolute;width:180px;height:180px;border:32px solid rgba(255,255,255,.055);border-radius:50%;right:-85px;bottom:-100px}
+    .id-top{display:flex;justify-content:space-between;align-items:start;position:relative;z-index:2}
+    .id-logo{font-size:17px;font-weight:950;letter-spacing:-1px}.id-logo small{display:block;font-size:6px;letter-spacing:.08em;color:#ded6e6;margin-top:2px}
+    .id-chip{width:31px;height:23px;border-radius:6px;background:linear-gradient(145deg,#f3d99a,#aa7d28);position:relative}
+    .id-chip:after{content:"";position:absolute;inset:5px 8px;border:1px solid rgba(77,54,19,.5);border-radius:2px}
+    .id-mid{display:flex;gap:12px;align-items:center;margin-top:24px;position:relative;z-index:2}
+    .id-photo{width:52px;height:61px;border-radius:8px;background:linear-gradient(145deg,#f0d594,#b48332);display:grid;place-items:center;color:#3b2446;font-size:16px;font-weight:900;border:2px solid rgba(255,255,255,.65)}
+    .id-name{font-size:9px;font-weight:900;line-height:1.35;text-transform:uppercase}.id-number{font-size:8px;color:#e4dce8;margin-top:6px}.id-program{font-size:6px;color:#d4cbe0;margin-top:4px;max-width:140px;line-height:1.35}
+    .id-bottom{position:absolute;left:17px;right:17px;bottom:14px;display:flex;justify-content:space-between;align-items:end;z-index:2}
+    .id-bottom span{font-size:6px;color:#d7cde0}.id-bottom strong{font-size:7px;color:#f2d89c;letter-spacing:.08em}
+    .id-back{transform:rotateY(180deg);background:linear-gradient(145deg,#f5f4f8,#ded8e5);color:#2b2440;padding:15px}
+    .magstripe{height:34px;background:#1d1b23;margin:14px -15px 10px}.signature{height:24px;background:#fff;border-radius:3px;display:flex;justify-content:flex-end;align-items:center;padding-right:10px;font-size:7px;color:#555}
+    .barcode{height:30px;margin-top:10px;background:repeating-linear-gradient(90deg,#26222b 0 2px,transparent 2px 4px,#26222b 4px 5px,transparent 5px 8px)}
+    .id-back p{font-size:6px;line-height:1.5;margin:10px 0 0;color:#5e5868}
+    .rotate-btn{width:min(100%,280px);margin-top:17px;border:1px solid #dddfe6;background:#f8f9fb;color:#4e5668;padding:11px;border-radius:12px;font-size:9px;font-weight:850}
+
+    .table-wrap{overflow:auto}
+    table{border-collapse:collapse;width:100%;min-width:680px}
+    th,td{text-align:left;padding:14px 18px;border-bottom:1px solid #eef0f4;font-size:10px}
+    th{background:#fafbfc;color:#727b8d;font-size:8px;text-transform:uppercase;letter-spacing:.1em;font-weight:850}
+    td strong{color:var(--uitm-purple)}
+    .grade{display:inline-grid;place-items:center;width:31px;height:31px;border-radius:10px;background:#edf7f1;color:var(--good);font-weight:900}
+    .pass{display:inline-flex;align-items:center;gap:6px;color:var(--good);font-size:8px;font-weight:850}.pass:before{content:"";width:7px;height:7px;border-radius:50%;background:var(--good)}
+    .summary-row{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid #e8ebf0;background:#fafbfc}
+    .summary-item{text-align:center;padding:18px;border-right:1px solid #e8ebf0}.summary-item:last-child{border:0}
+    .summary-item span{display:block;color:var(--muted);font-size:8px;font-weight:850;letter-spacing:.1em;text-transform:uppercase}.summary-item strong{display:block;font-size:20px;margin-top:5px}
+
+    .finance-grid{display:grid;grid-template-columns:minmax(270px,.55fr) minmax(0,1.4fr);gap:18px}
+    .balance{padding:27px;background:linear-gradient(150deg,#fff,#f8f5fb)}
+    .balance-label{font-size:9px;font-weight:850;color:var(--muted);text-transform:uppercase;letter-spacing:.11em}
+    .balance-value{font-size:37px;font-weight:900;letter-spacing:-.05em;margin:13px 0 8px}
+    .clear{display:inline-flex;align-items:center;gap:7px;padding:7px 9px;border-radius:999px;background:#e8f6ed;color:var(--good);font-size:8px;font-weight:850}
+    .balance-meta{display:grid;gap:10px;margin-top:25px;padding-top:18px;border-top:1px solid #e9e7ec}.balance-meta div{display:flex;justify-content:space-between;font-size:9px;color:var(--muted)}.balance-meta strong{color:var(--ink)}
+    .transaction{display:flex;justify-content:space-between;gap:20px;align-items:center;padding:17px 20px;border-bottom:1px solid #eef0f4}.transaction:last-child{border:0}.tx-left{display:flex;align-items:center;gap:12px}.tx-icon{width:37px;height:37px;border-radius:12px;background:#eef2f7;display:grid;place-items:center;color:#526078}.tx-icon svg{width:17px;height:17px}.transaction h4{font-size:10px;margin:0}.transaction p{font-size:8px;color:var(--muted);margin:5px 0 0}.tx-right{text-align:right}.tx-right strong{display:block;font-size:10px}.tx-right span{display:block;margin-top:4px;color:var(--good);font-size:8px;font-weight:850}
+
+    .services-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+    .service-card{padding:19px;border:1px solid var(--line);background:#fff;border-radius:17px;box-shadow:0 8px 22px rgba(25,32,50,.04);transition:.18s ease}
+    .service-card:hover{transform:translateY(-2px);box-shadow:0 14px 32px rgba(47,10,82,.09);border-color:#d3c5df}
+    .service-icon{width:42px;height:42px;border-radius:13px;background:#f0eaf5;color:var(--uitm-purple);display:grid;place-items:center}.service-icon svg{width:19px;height:19px}.service-card h3{font-size:11px;margin:15px 0 6px}.service-card p{font-size:9px;line-height:1.55;color:var(--muted);margin:0}.service-card button{margin-top:14px;border:0;background:transparent;color:var(--uitm-purple);font-size:8px;font-weight:850;text-transform:uppercase;letter-spacing:.09em;padding:0}
+
+    .mobile-nav{display:none}
+    .toast{position:fixed;right:24px;bottom:24px;z-index:100;max-width:360px;padding:14px 16px;border-radius:14px;color:#fff;background:#262031;box-shadow:0 16px 40px rgba(20,15,27,.24);font-size:10px;line-height:1.55;opacity:0;transform:translateY(12px);pointer-events:none;transition:.25s ease}.toast.show{opacity:1;transform:none}
+    .overlay{display:none}
+
+    @media (max-width:1100px){
+      .app{grid-template-columns:235px minmax(0,1fr)}
+      .sidebar{padding-left:13px;padding-right:13px}
+      .hero{grid-template-columns:1fr}.hero-card{display:none}
+      .stats{grid-template-columns:repeat(2,1fr)}
+      .grid-2,.profile-grid,.finance-grid{grid-template-columns:1fr}
+      .services-grid{grid-template-columns:repeat(2,1fr)}
+    }
+    @media (max-width:780px){
+      body{padding-bottom:70px}
+      .app{display:block}
+      .sidebar{position:fixed;left:0;top:0;bottom:0;width:274px;height:100vh;transform:translateX(-105%);transition:.25s ease;z-index:80}
+      body.sidebar-open .sidebar{transform:none}
+      .overlay{position:fixed;inset:0;background:rgba(16,13,22,.42);z-index:70}
+      body.sidebar-open .overlay{display:block}
+      .topbar{height:66px;padding:0 16px}.mobile-menu{display:grid}.search{display:none}.profile-copy{display:none}.profile-button{border:0;padding-left:0}
+      .content{padding:21px 16px 36px}.page-head{align-items:start}.session-pill{display:none}h1{font-size:22px}.subtitle{font-size:10px}
+      .hero{padding:23px;min-height:230px;border-radius:20px}.hero h2{font-size:25px}.hero p{font-size:10px}.hero-actions{margin-top:17px}
+      .stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.stat{padding:14px}.stat-value{font-size:20px;margin-top:13px}
+      .quick-links{grid-template-columns:repeat(2,1fr);padding:14px}.schedule-row{grid-template-columns:56px 4px minmax(0,1fr)}.schedule-chip{display:none}
+      .profile-banner{align-items:flex-start;padding:20px}.profile-photo{width:62px;height:62px;border-radius:18px}.profile-banner h2{font-size:15px}.info-grid{grid-template-columns:1fr;padding:18px 20px 4px}
+      .summary-row{grid-template-columns:repeat(2,1fr)}.summary-item:nth-child(2){border-right:0}.summary-item:nth-child(-n+2){border-bottom:1px solid #e8ebf0}
+      .services-grid{grid-template-columns:1fr}
+      .mobile-nav{position:fixed;left:0;right:0;bottom:0;z-index:60;height:66px;padding:5px 8px env(safe-area-inset-bottom);background:rgba(255,255,255,.96);border-top:1px solid #e2e5eb;display:grid;grid-template-columns:repeat(5,1fr);box-shadow:0 -8px 22px rgba(25,32,50,.06)}
+      .mnav-btn{border:0;background:transparent;color:#8991a2;display:grid;place-items:center;align-content:center;gap:3px;font-size:7px;font-weight:800;text-transform:uppercase}.mnav-btn svg{width:18px;height:18px}.mnav-btn.active{color:var(--uitm-purple)}
+      .toast{right:14px;left:14px;bottom:80px;max-width:none}
+    }
+    @media (max-width:460px){
+      .stats{grid-template-columns:1fr 1fr}.stat-note{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.hero h2{font-size:22px}.hero-actions .btn{flex:1;justify-content:center}.top-actions .icon-btn:first-child{display:none}.profile-banner{gap:12px}.profile-photo{width:54px;height:54px}.page-head{margin-bottom:17px}.services-grid{gap:11px}
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay" id="overlay" aria-hidden="true"></div>
+  <div class="app">
+    <aside class="sidebar" aria-label="Portal navigation">
+      <div class="brand">
+        <div class="brand-mark">UiTM</div>
+        <div class="brand-title">Student Portal<span>Universiti Teknologi MARA</span></div>
+      </div>
+      <div class="demo-tag">Unofficial interface demo</div>
+
+      <div class="nav-title">Student Workspace</div>
+      <nav class="nav">
+        <button class="nav-btn active" data-view="dashboard">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v10h13V10"/><path d="M9.5 20v-6h5v6"/></svg>
+          Dashboard
+        </button>
+        <button class="nav-btn" data-view="profile">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="12" cy="8" r="4"/><path d="M4.5 21a7.5 7.5 0 0 1 15 0"/></svg>
+          My Profile
+        </button>
+        <button class="nav-btn" data-view="academic">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="m3 8.5 9-5 9 5-9 5-9-5Z"/><path d="M6 11v5.5c3.6 2.7 8.4 2.7 12 0V11"/></svg>
+          Academic
+        </button>
+        <button class="nav-btn" data-view="finance">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><path d="M7 15h4"/></svg>
+          Finance
+        </button>
+        <button class="nav-btn" data-view="services">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          Online Services <span class="nav-count">12</span>
+        </button>
+      </nav>
+
+      <div class="nav-title">Communication</div>
+      <nav class="nav">
+        <button class="nav-btn" data-demo-action="Announcements">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M4 13h3l9 5V6l-9 5H4v2Z"/><path d="M7 13v5"/><path d="M19 9a4 4 0 0 1 0 6"/></svg>
+          Announcements <span class="nav-count">3</span>
+        </button>
+        <button class="nav-btn" data-demo-action="Help Centre">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.7 2.7 0 1 1 4.4 2.1c-1.1.8-1.9 1.3-1.9 2.9"/><path d="M12 18h.01"/></svg>
+          Help Centre
+        </button>
+      </nav>
+
+      <div class="sidebar-help">
+        <strong>Need assistance?</strong>
+        <p>Use the official UiTM support channels for account, registration, billing, or examination issues.</p>
+        <button type="button" data-demo-action="Official support">Open support</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div style="display:flex;align-items:center;gap:12px;min-width:0;flex:1">
+          <button class="mobile-menu" id="mobileMenu" aria-label="Open navigation">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+          </button>
+          <div class="search">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+            <input id="portalSearch" type="search" placeholder="Search services, courses, announcements…" aria-label="Search portal" />
+          </div>
+        </div>
+        <div class="top-actions">
+          <button class="icon-btn" aria-label="Language" data-demo-action="Language selector">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="12" cy="12" r="9"/><path d="M3.5 9h17M3.5 15h17M12 3c2.2 2.4 3.2 5.4 3.2 9S14.2 18.6 12 21c-2.2-2.4-3.2-5.4-3.2-9S9.8 5.4 12 3Z"/></svg>
+          </button>
+          <button class="icon-btn" aria-label="Notifications" data-demo-action="Notifications">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg><span class="dot"></span>
+          </button>
+          <button class="profile-button" type="button" data-view="profile">
+            <div class="avatar">AA</div>
+            <div class="profile-copy"><strong>Amirul Aleeq</strong><span>2023142069 · Student</span></div>
+          </button>
+        </div>
+      </header>
+
+      <div class="content">
+        <div class="page-head">
+          <div>
+            <div class="eyebrow" id="eyebrow">Student Overview</div>
+            <h1 id="pageTitle">Dashboard</h1>
+            <p class="subtitle" id="pageSubtitle">Your classes, announcements, tasks, and important links in one place.</p>
+          </div>
+          <div class="session-pill"><i></i> Session 20244 · Active</div>
+        </div>
+
+        <section class="view active" id="view-dashboard">
+          <div class="hero">
+            <div class="hero-copy">
+              <div class="hero-kicker">Academic Session 20244</div>
+              <h2>Welcome back, Amirul.</h2>
+              <p>Your examination slip is available. Review the timetable and download a copy before the examination period begins.</p>
+              <div class="hero-actions">
+                <button class="btn btn-gold" data-demo-action="Exam slip download">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M4 18v2h16v-2"/></svg>
+                  Download Exam Slip
+                </button>
+                <button class="btn btn-light" data-view="academic">View Results</button>
+              </div>
+            </div>
+            <div class="hero-card">
+              <div class="hero-card-head"><span>Next class</span><strong>Today</strong></div>
+              <div class="class-time">08:00</div>
+              <div class="class-course">ICT600 · IT Project Management</div>
+              <div class="class-meta"><span>BK 3-12</span><span>2 hours</span><span>Dr. Farah</span></div>
+            </div>
+          </div>
+
+          <div class="stats">
+            <div class="stat">
+              <div class="stat-top"><div class="stat-label">Current GPA</div><div class="stat-icon green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 18 9 13l3 3 8-9"/><path d="M15 7h5v5"/></svg></div></div>
+              <div class="stat-value">3.85</div><div class="stat-note">CGPA 3.78 · Good standing</div>
+            </div>
+            <div class="stat">
+              <div class="stat-top"><div class="stat-label">Credit Earned</div><div class="stat-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 4h14v16H5z"/><path d="M9 8h6M9 12h6M9 16h3"/></svg></div></div>
+              <div class="stat-value">64</div><div class="stat-note">48% programme completion</div>
+            </div>
+            <div class="stat">
+              <div class="stat-top"><div class="stat-label">Pending Tasks</div><div class="stat-icon gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 4h6l1 2h3v15H5V6h3l1-2Z"/><path d="m8 13 2 2 5-5"/></svg></div></div>
+              <div class="stat-value">5</div><div class="stat-note">2 items due this week</div>
+            </div>
+            <div class="stat">
+              <div class="stat-top"><div class="stat-label">Outstanding</div><div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/></svg></div></div>
+              <div class="stat-value">RM 0.00</div><div class="stat-note">Account fully paid</div>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div>
+              <div class="panel">
+                <div class="panel-head"><div><h3 class="panel-title">Today’s Schedule</h3><div class="panel-subtitle">Monday · 4 classes</div></div><button class="text-btn" data-demo-action="Full timetable">Full timetable</button></div>
+                <div class="schedule">
+                  <div class="schedule-row"><div class="schedule-time"><strong>08:00</strong><span>10:00</span></div><div class="schedule-bar"></div><div class="schedule-course"><strong>ICT600 · IT Project Management</strong><span>BK 3-12 · Dr. Farah Binti Yusof</span></div><div class="schedule-chip">Lecture</div></div>
+                  <div class="schedule-row"><div class="schedule-time"><strong>10:30</strong><span>12:30</span></div><div class="schedule-bar blue"></div><div class="schedule-course"><strong>CSC510 · Discrete Structures</strong><span>MK 2-04 · Encik Ahmad Hilmi</span></div><div class="schedule-chip">Tutorial</div></div>
+                  <div class="schedule-row"><div class="schedule-time"><strong>14:00</strong><span>16:00</span></div><div class="schedule-bar gold"></div><div class="schedule-course"><strong>CSC584 · Enterprise Programming</strong><span>Lab 5 · Puan Nurul Huda</span></div><div class="schedule-chip">Lab</div></div>
+                </div>
+              </div>
+
+              <div class="panel" style="margin-top:18px">
+                <div class="panel-head"><div><h3 class="panel-title">Quick Access</h3><div class="panel-subtitle">Frequently used student systems</div></div><button class="text-btn" data-view="services">All services</button></div>
+                <div class="quick-links">
+                  <button class="quick-link" data-demo-action="MyStudent"><div class="ql-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M5 21a7 7 0 0 1 14 0"/></svg></div><strong>MyStudent</strong><span>Student affairs</span></button>
+                  <button class="quick-link" data-demo-action="iLearn"><div class="ql-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 8 9-5 9 5-9 5-9-5Z"/><path d="M6 11v6c4 2.5 8 2.5 12 0v-6"/></svg></div><strong>i-Learn</strong><span>Learning portal</span></button>
+                  <button class="quick-link" data-demo-action="eCourse Registration"><div class="ql-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/></svg></div><strong>eCR</strong><span>Course registration</span></button>
+                  <button class="quick-link" data-demo-action="Library"><div class="ql-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5.5A3.5 3.5 0 0 1 7.5 2H11v18H7.5A3.5 3.5 0 0 0 4 23V5.5ZM20 5.5A3.5 3.5 0 0 0 16.5 2H13v18h3.5A3.5 3.5 0 0 1 20 23V5.5Z"/></svg></div><strong>PTAR</strong><span>Digital library</span></button>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-head"><div><h3 class="panel-title">Latest Announcements</h3><div class="panel-subtitle">Academic and campus updates</div></div><button class="text-btn" data-demo-action="All announcements">View all</button></div>
+              <div class="announcement-list">
+                <article class="announcement"><div class="ann-date"><strong>28</strong>JUL</div><div><h4>Course registration guidance for Session 20262</h4><p>Review important dates and confirm your registered courses through the designated system.</p></div></article>
+                <article class="announcement"><div class="ann-date"><strong>25</strong>JUL</div><div><h4>Academic calendar update</h4><p>The latest semester calendar and examination-related dates are available for reference.</p></div></article>
+                <article class="announcement"><div class="ann-date"><strong>21</strong>JUL</div><div><h4>Examination result notice</h4><p>Students are advised to retain a downloaded or printed copy of their results.</p></div></article>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="view-profile">
+          <div class="profile-grid">
+            <div class="panel">
+              <div class="profile-banner">
+                <div class="profile-photo">AA</div>
+                <div><h2>Mohd Amirul Aleeq Che Karola</h2><p>2023142069 · CS230<br>Bachelor of Computer Science (Hons.)</p><div class="status"><i></i> Active student</div></div>
+              </div>
+              <div class="info-grid">
+                <div class="info"><label>Student ID</label><div>2023142069</div></div>
+                <div class="info"><label>Current Session</label><div>20244</div></div>
+                <div class="info"><label>Faculty / College</label><div>College of Computing, Informatics and Mathematics</div></div>
+                <div class="info"><label>Campus</label><div>UiTM Cawangan Kelantan</div></div>
+                <div class="info"><label>Student Email</label><div class="link">2023142069@student.uitm.edu.my</div></div>
+                <div class="info"><label>Academic Status</label><div>Good Standing</div></div>
+                <div class="info"><label>Programme Mode</label><div>Full Time</div></div>
+                <div class="info"><label>Level</label><div>Bachelor’s Degree</div></div>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-head"><div><h3 class="panel-title">Digital Student Card</h3><div class="panel-subtitle">Tap the card to view its reverse</div></div></div>
+              <div class="id-wrap">
+                <div class="id-note">This is a visual demo card and is not valid for identification or campus access.</div>
+                <div class="id-card-shell" id="idCardShell" role="button" tabindex="0" aria-label="Flip digital student card">
+                  <div class="id-card" id="studentCard">
+                    <div class="id-face id-front">
+                      <div class="id-top"><div class="id-logo">UiTM<small>UNIVERSITI TEKNOLOGI MARA</small></div><div class="id-chip"></div></div>
+                      <div class="id-mid"><div class="id-photo">AA</div><div><div class="id-name">Mohd Amirul Aleeq<br>Che Karola</div><div class="id-number">2023142069</div><div class="id-program">CS230 · Bachelor of Computer Science (Hons.)</div></div></div>
+                      <div class="id-bottom"><span>STUDENT / PELAJAR</span><strong>DEMO CARD</strong></div>
+                    </div>
+                    <div class="id-face id-back"><div class="magstripe"></div><div class="signature">Authorised signature</div><div class="barcode"></div><p>This card remains the property of its issuing institution. This mock-up is provided only as a user-interface demonstration and cannot be used for authentication or access.</p></div>
+                  </div>
+                </div>
+                <button class="rotate-btn" id="rotateCard">↻ Rotate card</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="view-academic">
+          <div class="panel">
+            <div class="panel-head"><div><h3 class="panel-title">Examination Results</h3><div class="panel-subtitle">Session 20244 · Released</div></div><button class="btn" style="background:#f1edf5;color:var(--uitm-purple)" data-demo-action="Change semester">Change Semester</button></div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Course Code</th><th>Course Description</th><th>Credit</th><th>Grade</th><th>Status</th></tr></thead>
+                <tbody>
+                  <tr><td><strong>CSC510</strong></td><td>Discrete Structures</td><td>3</td><td><span class="grade">A</span></td><td><span class="pass">Pass</span></td></tr>
+                  <tr><td><strong>ICT600</strong></td><td>IT Project Management</td><td>3</td><td><span class="grade">A−</span></td><td><span class="pass">Pass</span></td></tr>
+                  <tr><td><strong>CSC584</strong></td><td>Enterprise Programming</td><td>4</td><td><span class="grade">A</span></td><td><span class="pass">Pass</span></td></tr>
+                  <tr><td><strong>MAT421</strong></td><td>Calculus II</td><td>3</td><td><span class="grade">B+</span></td><td><span class="pass">Pass</span></td></tr>
+                  <tr><td><strong>CTU554</strong></td><td>Values and Civilisation II</td><td>2</td><td><span class="grade">A</span></td><td><span class="pass">Pass</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="summary-row"><div class="summary-item"><span>GPA</span><strong>3.85</strong></div><div class="summary-item"><span>CGPA</span><strong>3.78</strong></div><div class="summary-item"><span>Credits Earned</span><strong>64</strong></div><div class="summary-item"><span>Status</span><strong style="color:var(--good);font-size:16px;margin-top:8px">GOOD</strong></div></div>
+          </div>
+        </section>
+
+        <section class="view" id="view-finance">
+          <div class="finance-grid">
+            <div class="panel balance">
+              <div class="balance-label">Total Outstanding</div><div class="balance-value">RM 0.00</div><div class="clear">✓ Clear account</div>
+              <div class="balance-meta"><div><span>Last payment</span><strong>1 Mar 2025</strong></div><div><span>Payment method</span><strong>FPX</strong></div><div><span>Current session</span><strong>20244</strong></div></div>
+              <button class="btn" style="width:100%;justify-content:center;margin-top:20px;background:var(--uitm-purple);color:#fff" data-demo-action="Download statement">Download Statement</button>
+            </div>
+            <div class="panel">
+              <div class="panel-head"><div><h3 class="panel-title">Recent Transactions</h3><div class="panel-subtitle">Payments and financial activity</div></div><button class="text-btn" data-demo-action="All transactions">View all</button></div>
+              <div>
+                <div class="transaction"><div class="tx-left"><div class="tx-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16v14H4zM8 3v6M16 3v6M4 10h16"/></svg></div><div><h4>Semester Fee · Session 20244</h4><p>Receipt: FPX-20250301-2069</p></div></div><div class="tx-right"><strong>RM 540.00</strong><span>FPX PAID</span></div></div>
+                <div class="transaction"><div class="tx-left"><div class="tx-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 4 7v5c0 5 3.2 8 8 9 4.8-1 8-4 8-9V7l-8-4Z"/><path d="m9 12 2 2 4-4"/></svg></div><div><h4>Insurance Coverage</h4><p>Receipt: FPX-20250301-2070</p></div></div><div class="tx-right"><strong>RM 15.00</strong><span>FPX PAID</span></div></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="view-services">
+          <div class="services-grid">
+            <article class="service-card"><div class="service-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M5 21a7 7 0 0 1 14 0"/></svg></div><h3>MyStudent</h3><p>Access student affairs information and related services.</p><button data-demo-action="MyStudent">Open service →</button></article>
+            <article class="service-card"><div class="service-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/></svg></div><h3>eCourse Registration</h3><p>Register courses and review your current course selection.</p><button data-demo-action="eCourse Registration">Open service →</button></article>
+            <article class="service-card"><div class="service-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 8 9-5 9 5-9 5-9-5Z"/><path d="M6 11v6c4 2.5 8 2.5 12 0v-6"/></svg></div><h3>i-Learn / UFUTURE</h3><p>Open course materials, online learning activities, and assessments.</p><button data-demo-action="Learning portal">Open service →</button></article>
+            <article class="service-card"><div class="service-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5.5A3.5 3.5 0 0 1 7.5 2H11v18H7.5A3.5 3.5 0 0 0 4 23V5.5ZM20 5.5A3.5 3.5 0 0 0 16.5 2H13v18h3.5A3.5 3.5 0 0 1 20 23V5.5Z"/></svg></div><h3>UiTM Library</h3><p>Search digital collections, databases, and library resources.</p><button data-demo-action="UiTM Library">Open service →</button></article>
+            <article class="service-card"><div class="service-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 4h14v16H5z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></div><h3>Examination</h3><p>View timetables, result services, and examination notices.</p><button data-demo-action="Examination services">Open service →</button></article>
+            <article class="service-card"><div class="service-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h4"/></svg></div><h3>Student Bills</h3><p>Review fees, statements, transactions, and payment status.</p><button data-view="finance">Open service →</button></article>
+            <article class="service-card"><div class="service-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20h16M6 20V8l6-4 6 4v12M9 12h6M9 16h6"/></svg></div><h3>Academic Calendar</h3><p>Check registration, teaching, assessment, and examination dates.</p><button data-demo-action="Academic calendar">Open service →</button></article>
+            <article class="service-card"><div class="service-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V5h16v14H4Z"/><path d="M8 9h8M8 13h5"/></svg></div><h3>Transcript Application</h3><p>Access information for academic transcript applications.</p><button data-demo-action="Transcript application">Open service →</button></article>
+            <article class="service-card"><div class="service-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 20h10M9 20v-4h6v4M5 4h14v12H5z"/><path d="M8 8h8M8 12h4"/></svg></div><h3>JobShop UiTM</h3><p>Explore career resources, vacancies, and employability opportunities.</p><button data-demo-action="JobShop UiTM">Open service →</button></article>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <nav class="mobile-nav" aria-label="Mobile navigation">
+    <button class="mnav-btn active" data-view="dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 11 9-8 9 8"/><path d="M5 10v10h14V10M9 20v-6h6v6"/></svg>Home</button>
+    <button class="mnav-btn" data-view="profile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M5 21a7 7 0 0 1 14 0"/></svg>Profile</button>
+    <button class="mnav-btn" data-view="academic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 8 9-5 9 5-9 5-9-5Z"/><path d="M6 11v6c4 2.5 8 2.5 12 0v-6"/></svg>Academic</button>
+    <button class="mnav-btn" data-view="finance"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/></svg>Finance</button>
+    <button class="mnav-btn" data-view="services"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Services</button>
+  </nav>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const pageData = {
+      dashboard: ['Student Overview','Dashboard','Your classes, announcements, tasks, and important links in one place.'],
+      profile: ['Student Management','My Profile','View your personal particulars and digital student card.'],
+      academic: ['Academic','Results & Grades','Review examination results, credits, GPA, and academic status.'],
+      finance: ['Finance','Student Account','Check outstanding balances, payments, and recent transactions.'],
+      services: ['Student Systems','Online Services','Quick access to frequently used UiTM student services.']
+    };
+
+    const views = document.querySelectorAll('.view');
+    const viewButtons = document.querySelectorAll('[data-view]');
+    const sidebarButtons = document.querySelectorAll('.sidebar .nav-btn[data-view]');
+    const mobileButtons = document.querySelectorAll('.mnav-btn');
+    const title = document.getElementById('pageTitle');
+    const subtitle = document.getElementById('pageSubtitle');
+    const eyebrow = document.getElementById('eyebrow');
+    const toast = document.getElementById('toast');
+    let toastTimer;
+
+    function showToast(message){
+      clearTimeout(toastTimer);
+      toast.textContent = message;
+      toast.classList.add('show');
+      toastTimer = setTimeout(() => toast.classList.remove('show'), 3200);
+    }
+
+    function switchView(name){
+      if(!pageData[name]) return;
+      views.forEach(view => view.classList.toggle('active', view.id === `view-${name}`));
+      sidebarButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.view === name));
+      mobileButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.view === name));
+      eyebrow.textContent = pageData[name][0];
+      title.textContent = pageData[name][1];
+      subtitle.textContent = pageData[name][2];
+      document.body.classList.remove('sidebar-open');
+      window.scrollTo({top:0,behavior:'smooth'});
+      history.replaceState(null,'',`#${name}`);
+    }
+
+    viewButtons.forEach(btn => btn.addEventListener('click', () => switchView(btn.dataset.view)));
+
+    document.querySelectorAll('[data-demo-action]').forEach(btn => {
+      btn.addEventListener('click', () => showToast(`${btn.dataset.demoAction} is shown as a demo action only. Connect it to the official system in production.`));
+    });
+
+    const card = document.getElementById('studentCard');
+    function flipCard(){ card.classList.toggle('flipped'); }
+    document.getElementById('rotateCard').addEventListener('click', flipCard);
+    document.getElementById('idCardShell').addEventListener('click', flipCard);
+    document.getElementById('idCardShell').addEventListener('keydown', e => { if(e.key === 'Enter' || e.key === ' '){e.preventDefault();flipCard();} });
+
+    document.getElementById('mobileMenu').addEventListener('click', () => document.body.classList.add('sidebar-open'));
+    document.getElementById('overlay').addEventListener('click', () => document.body.classList.remove('sidebar-open'));
+
+    document.getElementById('portalSearch').addEventListener('keydown', e => {
+      if(e.key === 'Enter'){
+        const query = e.currentTarget.value.trim();
+        showToast(query ? `Search demo: “${query}”. Add your backend search endpoint to return live results.` : 'Type a service, course, or announcement to search.');
+      }
+    });
+
+    const initialView = location.hash.replace('#','');
+    if(pageData[initialView]) switchView(initialView);
+  </script>
+</body>
+</html>
